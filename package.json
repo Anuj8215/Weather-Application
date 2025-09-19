@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Anuj8215/Weather-Application/issues"
   },
-  "homepage": "https://github.com/Anuj8215/Weather-Application#readme"
+  "homepage": "https://github.com/Anuj8215/Weather-Application#readme",
+  "dependencies": {
+    "openmeteo": "^1.2.0"
+  }
 }
