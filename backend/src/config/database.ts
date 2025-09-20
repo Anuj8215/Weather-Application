@@ -1,16 +1,11 @@
-// Ensure global 'console' and 'process' are available in environments where they may be undefined
-declare var console: Console;
-// @ts-expect-error: process is a global in Node.js environments
-declare var process;
-
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const MONGO_URI =
-  process.env.MONGO_URI ||
-  'mongodb+srv://anujpawar:anuj1010@speaksyauth.zlpmokq.mongodb.net/weather';
+  process.env.MONGODB_URI ||
+  'mongodb+srv://anujpawar:@speaksyauth.zlpmokq.mongodb.net/weather';
 
 export const connectDB = async (): Promise<void> => {
   try {

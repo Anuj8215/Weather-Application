@@ -87,9 +87,16 @@ export interface User {
   updatedAt: Date;
 }
 
+export interface LocationSearchResult {
+  name: string;
+  latitude: number;
+  longitude: number;
+  country?: string;
+  admin1?: string;
+  admin2?: string;
+}
+
 export interface AuthTokenPayload {
   userId: string;
   email: string;
-  iat: number;
-  exp: number;
 }

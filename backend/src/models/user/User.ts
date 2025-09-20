@@ -1,12 +1,12 @@
 // Removed conflicting import of User
-import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
   email: string;
   username: string;
   password: string;
-  favouriteLocations: string[];
+  favoriteLocations: string[];
   preferences: {
     temperatureUnit: 'celsius' | 'fahrenheit';
     theme: 'light' | 'dark';
@@ -42,7 +42,7 @@ const UserSchema = new Schema<IUser>(
       required: true,
       minlength: 6,
     },
-    favouriteLocations: [
+    favoriteLocations: [
       {
         type: String,
         trim: true,
@@ -98,5 +98,6 @@ UserSchema.methods.comparePassword = async function (
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const UserModel = mongoose.model<IUser>('User', UserSchema);
-export default UserModel;
+const User = mongoose.model<IUser>('User', UserSchema);
+export { User };
+export default User;

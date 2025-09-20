@@ -1,22 +1,13 @@
-//NOTE - This service interacts with the Open-Meteo API to fetch current weather data, forecasts, and location searches.
-
 import { fetchWeatherApi } from 'openmeteo';
 import {
-  WeatherResponse,
-  WeatherData,
-  LocationData,
-  HourlyWeatherData,
   DailyWeatherData,
+  HourlyWeatherData,
+  LocationData,
+  LocationSearchResult,
   Minutely15WeatherData,
+  WeatherData,
+  WeatherResponse,
 } from '../../types/index.js';
-
-// Ensure global 'console' and 'fetch' are available in environments where they may be undefined
-declare var console: Console;
-declare function fetch(
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): Promise<Response>;
-
 export class WeatherService {
   private readonly baseUrl: string;
 
@@ -106,15 +97,19 @@ export class WeatherService {
           minutely15.interval(),
         ).map((t) => new Date((t + location.utcOffsetSeconds) * 1000));
 
+        const rainValues = minutely15.variables(0)?.valuesArray();
+        const sunshineValues = minutely15.variables(1)?.valuesArray();
+        const visibilityValues = minutely15.variables(2)?.valuesArray();
+        const dewPointValues = minutely15.variables(3)?.valuesArray();
+        const temperatureValues = minutely15.variables(4)?.valuesArray();
+
         minutely15Data = {
           time: timeRange,
-          rain: Array.from(minutely15.variables(0)?.valuesArray() ?? []),
-          sunshineDuration: Array.from(
-            minutely15.variables(1)?.valuesArray() ?? [],
-          ),
-          visibility: Array.from(minutely15.variables(2)?.valuesArray() ?? []),
-          dewPoint: Array.from(minutely15.variables(3)?.valuesArray() ?? []),
-          temperature: Array.from(minutely15.variables(4)?.valuesArray() ?? []),
+          rain: rainValues ? Array.from(rainValues) : [],
+          sunshineDuration: sunshineValues ? Array.from(sunshineValues) : [],
+          visibility: visibilityValues ? Array.from(visibilityValues) : [],
+          dewPoint: dewPointValues ? Array.from(dewPointValues) : [],
+          temperature: temperatureValues ? Array.from(temperatureValues) : [],
         };
       }
 
@@ -317,23 +312,14 @@ export class WeatherService {
         return [];
       }
 
-      return data.results.map(
-        (result: {
-          name: string;
-          latitude: number;
-          longitude: number;
-          country?: string;
-          admin1?: string;
-          admin2?: string;
-        }) => ({
-          name: result.name,
-          latitude: result.latitude,
-          longitude: result.longitude,
-          country: result.country || '',
-          admin1: result.admin1 || '',
-          admin2: result.admin2 || '',
-        }),
-      );
+      return data.results.map((result: LocationSearchResult) => ({
+        name: result.name,
+        latitude: result.latitude,
+        longitude: result.longitude,
+        country: result.country || '',
+        admin1: result.admin1 || '',
+        admin2: result.admin2 || '',
+      }));
     } catch (error) {
       console.error('Location search error:', error);
       throw new Error(
