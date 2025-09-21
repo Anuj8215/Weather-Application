@@ -42,6 +42,13 @@ export class WeatherController {
         weatherData.current.weatherCode,
       );
 
+      // Set cache control headers for live data
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+
       res.status(200).json({
         success: true,
         data: {
@@ -90,7 +97,7 @@ export class WeatherController {
         return;
       }
 
-      const forecastDays = days ? parseInt(days as string, 10) : 7;
+      const forecastDays = days ? parseInt(days as string, 10) : 10;
 
       if (forecastDays < 1 || forecastDays > 16) {
         res.status(400).json({
@@ -120,13 +127,18 @@ export class WeatherController {
         },
         daily: forecastData.daily
           ? {
-              ...forecastData.daily,
-              descriptions: forecastData.daily.weatherCode.map((code) =>
-                getWeatherDescription(code),
-              ),
-            }
+            ...forecastData.daily,
+            descriptions: forecastData.daily.weatherCode.map((code) =>
+              getWeatherDescription(code),
+            ),
+          }
           : undefined,
       };
+
+      // Set cache control headers for forecast data (can be cached longer than current weather)
+      res.set({
+        'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+      });
 
       res.status(200).json({
         success: true,

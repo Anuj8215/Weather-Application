@@ -45,3 +45,13 @@ Thumbs.db
 # Database
 *.db
 *.sqlite
+
+# Package manager
+package-lock.json
+yarn.lock
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierrc

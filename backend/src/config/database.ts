@@ -1,11 +1,8 @@
-import mongoose from 'mongoose';
+import { MONGO_URI } from '@/env.js';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
-
-const MONGO_URI =
-  process.env.MONGODB_URI ||
-  'mongodb+srv://anujpawar:@speaksyauth.zlpmokq.mongodb.net/weather';
 
 export const connectDB = async (): Promise<void> => {
   try {
@@ -16,7 +13,7 @@ export const connectDB = async (): Promise<void> => {
       socketTimeoutMS: 45000,
       family: 4,
     };
-    const connection = await mongoose.connect(MONGO_URI, options);
+    const connection = await mongoose.connect(String(MONGO_URI), options);
     console.log(`MongoDB connected: ${connection.connection.host}`);
 
     mongoose.connection.on('error', (err) => {

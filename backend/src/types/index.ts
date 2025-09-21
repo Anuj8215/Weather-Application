@@ -2,6 +2,7 @@
 // src/types/index.ts
 export interface WeatherData {
   temperature: number;
+  feelsLike: number;
   isDay: boolean;
   rain: number;
   weatherCode: number;
@@ -61,6 +62,7 @@ export interface WeatherResponse {
   hourly?: HourlyWeatherData;
   daily?: DailyWeatherData;
   minutely15?: Minutely15WeatherData;
+  lastUpdated: Date;
 }
 
 export interface WeatherCodeDescription {
