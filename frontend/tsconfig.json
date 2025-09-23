@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
@@ -8,14 +7,14 @@
       "ES2022",
       "DOM"
     ],
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "allowJs": true,
-    "jsx": "react-native",
+    "jsx": "react-jsx",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "removeComments": true,
     "noEmit": true,
     "incremental": true,
