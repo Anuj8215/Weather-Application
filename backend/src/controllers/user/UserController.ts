@@ -4,7 +4,10 @@ import { User } from '../../models/user/User.js';
 import { AuthenticatedRequest } from '../../middleware/auth/authMiddleware.js';
 
 export class UserController {
-  updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  updateProfile = async (
+    req: AuthenticatedRequest,
+    res: Response,
+  ): Promise<void> => {
     try {
       const { username, preferences } = req.body;
       const userId = req.user?.userId;
@@ -12,7 +15,7 @@ export class UserController {
       if (!userId) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: 'User not authenticated',
         });
         return;
       }
@@ -21,15 +24,15 @@ export class UserController {
 
       if (username) {
         // Check if username is already taken by another user
-        const existingUser = await User.findOne({ 
+        const existingUser = await User.findOne({
           username: username.toLowerCase(),
-          _id: { $ne: userId }
+          _id: { $ne: userId },
         });
 
         if (existingUser) {
           res.status(409).json({
             success: false,
-            message: 'Username already taken'
+            message: 'Username already taken',
           });
           return;
         }
@@ -41,20 +44,22 @@ export class UserController {
         updateData.preferences = {
           temperatureUnit: preferences.temperatureUnit || 'celsius',
           theme: preferences.theme || 'light',
-          notifications: preferences.notifications !== undefined ? preferences.notifications : true
+          notifications:
+            preferences.notifications !== undefined
+              ? preferences.notifications
+              : true,
         };
       }
 
-      const user = await User.findByIdAndUpdate(
-        userId,
-        updateData,
-        { new: true, select: '-password' }
-      );
+      const user = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+        select: '-password',
+      });
 
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         });
         return;
       }
@@ -70,21 +75,23 @@ export class UserController {
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt
-          }
-        }
+            updatedAt: user.updatedAt,
+          },
+        },
       });
-
     } catch (error) {
       console.error('Update profile error:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update profile'
+        message: 'Failed to update profile',
       });
     }
   };
 
-  updateFavoriteLocations = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  updateFavoriteLocations = async (
+    req: AuthenticatedRequest,
+    res: Response,
+  ): Promise<void> => {
     try {
       const { locations } = req.body;
       const userId = req.user?.userId;
@@ -92,7 +99,7 @@ export class UserController {
       if (!userId) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: 'User not authenticated',
         });
         return;
       }
@@ -100,7 +107,7 @@ export class UserController {
       if (locations.length > 10) {
         res.status(400).json({
           success: false,
-          message: 'Maximum 10 favorite locations allowed'
+          message: 'Maximum 10 favorite locations allowed',
         });
         return;
       }
@@ -108,13 +115,13 @@ export class UserController {
       const user = await User.findByIdAndUpdate(
         userId,
         { favoriteLocations: locations },
-        { new: true, select: '-password' }
+        { new: true, select: '-password' },
       );
 
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         });
         return;
       }
@@ -123,27 +130,29 @@ export class UserController {
         success: true,
         message: 'Favorite locations updated successfully',
         data: {
-          favoriteLocations: user.favoriteLocations
-        }
+          favoriteLocations: user.favoriteLocations,
+        },
       });
-
     } catch (error) {
       console.error('Update favorite locations error:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update favorite locations'
+        message: 'Failed to update favorite locations',
       });
     }
   };
 
-  deleteAccount = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  deleteAccount = async (
+    req: AuthenticatedRequest,
+    res: Response,
+  ): Promise<void> => {
     try {
       const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: 'User not authenticated',
         });
         return;
       }
@@ -153,21 +162,20 @@ export class UserController {
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         });
         return;
       }
 
       res.status(200).json({
         success: true,
-        message: 'Account deleted successfully'
+        message: 'Account deleted successfully',
       });
-
     } catch (error) {
       console.error('Delete account error:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to delete account'
+        message: 'Failed to delete account',
       });
     }
   };

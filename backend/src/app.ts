@@ -64,20 +64,21 @@ app.get('/api', (req, res) => {
     endpoints: {
       // Weather endpoints
       currentWeather: '/api/weather/current?latitude=18.5196&longitude=73.8554',
-      weatherForecast: '/api/weather/forecast?latitude=18.5196&longitude=73.8554&days=7',
+      weatherForecast:
+        '/api/weather/forecast?latitude=18.5196&longitude=73.8554&days=7',
       locationSearch: '/api/weather/search?q=Mumbai',
-      
+
       // Auth endpoints
       register: 'POST /api/auth/register',
       login: 'POST /api/auth/login',
       profile: 'GET /api/auth/profile',
       refreshToken: 'POST /api/auth/refresh',
-      
+
       // User endpoints
       updateProfile: 'PUT /api/user/profile',
       updateLocations: 'PUT /api/user/locations',
-      deleteAccount: 'DELETE /api/user/account'
-    }
+      deleteAccount: 'DELETE /api/user/account',
+    },
   });
 });
 
@@ -107,4 +108,3 @@ app.use((req, res) => {
 });
 
 export default app;
-

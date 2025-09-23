@@ -45,8 +45,8 @@ export class WeatherController {
       // Set cache control headers for live data
       res.set({
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
+        Pragma: 'no-cache',
+        Expires: '0',
       });
 
       res.status(200).json({
@@ -127,11 +127,11 @@ export class WeatherController {
         },
         daily: forecastData.daily
           ? {
-            ...forecastData.daily,
-            descriptions: forecastData.daily.weatherCode.map((code) =>
-              getWeatherDescription(code),
-            ),
-          }
+              ...forecastData.daily,
+              descriptions: forecastData.daily.weatherCode.map((code) =>
+                getWeatherDescription(code),
+              ),
+            }
           : undefined,
       };
 

@@ -11,11 +11,9 @@ export class AuthController {
       throw new Error('JWT_SECRET is not configured');
     }
 
-    return jwt.sign(
-      { userId, email },
-      secret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+    return jwt.sign({ userId, email }, secret, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    });
   }
 
   register = async (req: Request, res: Response): Promise<void> => {
@@ -24,15 +22,19 @@ export class AuthController {
 
       // Check if user already exists
       const existingUser = await User.findOne({
-        $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }]
+        $or: [
+          { email: email.toLowerCase() },
+          { username: username.toLowerCase() },
+        ],
       });
 
       if (existingUser) {
         res.status(409).json({
           success: false,
-          message: existingUser.email === email.toLowerCase() 
-            ? 'Email already registered' 
-            : 'Username already taken'
+          message:
+            existingUser.email === email.toLowerCase()
+              ? 'Email already registered'
+              : 'Username already taken',
         });
         return;
       }
@@ -46,8 +48,8 @@ export class AuthController {
         preferences: {
           temperatureUnit: 'celsius',
           theme: 'light',
-          notifications: true
-        }
+          notifications: true,
+        },
       });
 
       await user.save();
@@ -65,17 +67,16 @@ export class AuthController {
             username: user.username,
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
           },
-          token
-        }
+          token,
+        },
       });
-
     } catch (error) {
       console.error('Registration error:', error);
       res.status(500).json({
         success: false,
-        message: 'Registration failed'
+        message: 'Registration failed',
       });
     }
   };
@@ -86,22 +87,22 @@ export class AuthController {
 
       // Find user by email
       const user = await User.findOne({ email: email.toLowerCase() });
-      
+
       if (!user) {
         res.status(401).json({
           success: false,
-          message: 'Invalid email or password'
+          message: 'Invalid email or password',
         });
         return;
       }
 
       // Check password
       const isPasswordValid = await user.comparePassword(password);
-      
+
       if (!isPasswordValid) {
         res.status(401).json({
           success: false,
-          message: 'Invalid email or password'
+          message: 'Invalid email or password',
         });
         return;
       }
@@ -119,29 +120,31 @@ export class AuthController {
             username: user.username,
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
           },
-          token
-        }
+          token,
+        },
       });
-
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({
         success: false,
-        message: 'Login failed'
+        message: 'Login failed',
       });
     }
   };
 
-  getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  getProfile = async (
+    req: AuthenticatedRequest,
+    res: Response,
+  ): Promise<void> => {
     try {
       const user = await User.findById(req.user?.userId).select('-password');
-      
+
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         });
         return;
       }
@@ -156,26 +159,28 @@ export class AuthController {
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt
-          }
-        }
+            updatedAt: user.updatedAt,
+          },
+        },
       });
-
     } catch (error) {
       console.error('Get profile error:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to fetch profile'
+        message: 'Failed to fetch profile',
       });
     }
   };
 
-  refreshToken = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  refreshToken = async (
+    req: AuthenticatedRequest,
+    res: Response,
+  ): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: 'User not authenticated',
         });
         return;
       }
@@ -186,15 +191,14 @@ export class AuthController {
         success: true,
         message: 'Token refreshed successfully',
         data: {
-          token: newToken
-        }
+          token: newToken,
+        },
       });
-
     } catch (error) {
       console.error('Token refresh error:', error);
       res.status(500).json({
         success: false,
-        message: 'Token refresh failed'
+        message: 'Token refresh failed',
       });
     }
   };

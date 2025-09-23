@@ -22,10 +22,15 @@ export class WeatherService {
     );
   }
 
-  private calculateFeelsLike(temperature: number, humidity: number, windSpeed: number): number {
-
-    const windChill = temperature <= 10 ? temperature - (windSpeed * 0.7) : temperature;
-    const heatIndex = temperature >= 27 ? temperature + (humidity * 0.1) : temperature;
+  private calculateFeelsLike(
+    temperature: number,
+    humidity: number,
+    windSpeed: number,
+  ): number {
+    const windChill =
+      temperature <= 10 ? temperature - windSpeed * 0.7 : temperature;
+    const heatIndex =
+      temperature >= 27 ? temperature + humidity * 0.1 : temperature;
     return Math.round((windChill + heatIndex) / 2);
   }
 
@@ -95,7 +100,7 @@ export class WeatherService {
         feelsLike: this.calculateFeelsLike(
           Math.round(current.variables(0)?.value() ?? 0),
           current.variables(6)?.value() ?? 0,
-          current.variables(4)?.value() ?? 0
+          current.variables(4)?.value() ?? 0,
         ),
       };
 
@@ -218,7 +223,7 @@ export class WeatherService {
         feelsLike: this.calculateFeelsLike(
           Math.round(current.variables(0)?.value() ?? 0),
           current.variables(6)?.value() ?? 0,
-          current.variables(4)?.value() ?? 0
+          current.variables(4)?.value() ?? 0,
         ),
       };
 
@@ -263,25 +268,25 @@ export class WeatherService {
         time: dailyTimeRange,
         sunrise: sunriseVar
           ? Array.from(
-            { length: sunriseVar.valuesInt64Length() },
-            (_, i) =>
-              new Date(
-                (Number(sunriseVar.valuesInt64(i)) +
-                  location.utcOffsetSeconds) *
-                1000,
-              ),
-          )
+              { length: sunriseVar.valuesInt64Length() },
+              (_, i) =>
+                new Date(
+                  (Number(sunriseVar.valuesInt64(i)) +
+                    location.utcOffsetSeconds) *
+                    1000,
+                ),
+            )
           : [],
         sunset: sunsetVar
           ? Array.from(
-            { length: sunsetVar.valuesInt64Length() },
-            (_, i) =>
-              new Date(
-                (Number(sunsetVar.valuesInt64(i)) +
-                  location.utcOffsetSeconds) *
-                1000,
-              ),
-          )
+              { length: sunsetVar.valuesInt64Length() },
+              (_, i) =>
+                new Date(
+                  (Number(sunsetVar.valuesInt64(i)) +
+                    location.utcOffsetSeconds) *
+                    1000,
+                ),
+            )
           : [],
         uvIndexMax: Array.from(daily.variables(2)?.valuesArray() ?? []),
         daylightDuration: Array.from(daily.variables(3)?.valuesArray() ?? []),

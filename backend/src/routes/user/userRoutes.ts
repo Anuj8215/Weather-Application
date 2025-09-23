@@ -11,7 +11,12 @@ const userController = new UserController();
 router.put('/profile', authenticateToken, userController.updateProfile);
 
 // PUT /api/user/locations
-router.put('/locations', authenticateToken, validateLocationUpdate, userController.updateFavoriteLocations);
+router.put(
+  '/locations',
+  authenticateToken,
+  validateLocationUpdate,
+  userController.updateFavoriteLocations,
+);
 
 // DELETE /api/user/account
 router.delete('/account', authenticateToken, userController.deleteAccount);
