@@ -1,5 +1,3 @@
-//NOTE - This file contains TypeScript interfaces for various data structures used in the application.
-// src/types/index.ts
 export interface WeatherData {
   temperature: number;
   feelsLike: number;
@@ -24,36 +22,36 @@ export interface LocationData {
 }
 
 export interface HourlyWeatherData {
-  time: Date[];
-  temperature: number[];
-  rain: number[];
-  humidity: number[];
-  pressure: number[];
-  windSpeed: number[];
-  windDirection: number[];
-  weatherCode: number[];
+  time: Array<Date>;
+  temperature: Array<number>;
+  rain: Array<number>;
+  humidity: Array<number>;
+  pressure: Array<number>;
+  windSpeed: Array<number>;
+  windDirection: Array<number>;
+  weatherCode: Array<number>;
 }
 
 export interface DailyWeatherData {
-  time: Date[];
-  sunrise: Date[];
-  sunset: Date[];
-  uvIndexMax: number[];
-  daylightDuration: number[];
-  sunshineDuration: number[];
-  temperatureMax: number[];
-  temperatureMin: number[];
-  weatherCode: number[];
-  precipitationSum: number[];
+  time: Array<Date>;
+  sunrise: Array<Date>;
+  sunset: Array<Date>;
+  uvIndexMax: Array<number>;
+  daylightDuration: Array<number>;
+  sunshineDuration: Array<number>;
+  temperatureMax: Array<number>;
+  temperatureMin: Array<number>;
+  weatherCode: Array<number>;
+  precipitationSum: Array<number>;
 }
 
 export interface Minutely15WeatherData {
-  time: Date[];
-  rain: number[];
-  sunshineDuration: number[];
-  visibility: number[];
-  dewPoint: number[];
-  temperature: number[];
+  time: Array<Date>;
+  rain: Array<number>;
+  sunshineDuration: Array<number>;
+  visibility: Array<number>;
+  dewPoint: Array<number>;
+  temperature: Array<number>;
 }
 
 export interface WeatherResponse {

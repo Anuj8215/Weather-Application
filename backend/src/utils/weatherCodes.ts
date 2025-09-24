@@ -1,5 +1,5 @@
 // src/utils/weatherCodes.ts
-import { WeatherCodeDescription } from '../types/index.js';
+import { WeatherCodeDescription } from '../types/types.js';
 
 // WMO Weather interpretation codes (WW)
 export const weatherCodes: Record<number, WeatherCodeDescription> = {

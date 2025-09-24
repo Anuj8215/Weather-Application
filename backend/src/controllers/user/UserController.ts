@@ -1,42 +1,29 @@
-//SECTION - This code is written to create a user controller for an Express application that manages user profiles, favorite locations, and account deletion.
 import { Response } from 'express';
-import { User } from '../../models/user/User.js';
 import { AuthenticatedRequest } from '../../middleware/auth/authMiddleware.js';
+import { User } from '../../models/user/User.js';
+
+interface Preferences {
+  temperatureUnit?: 'celsius' | 'fahrenheit';
+  theme?: 'light' | 'dark';
+  notifications?: boolean;
+}
+
+interface IUserUpdate {
+  username?: string;
+  preferences?: Preferences;
+}
 
 export class UserController {
-  updateProfile = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
+  updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { username, preferences } = req.body;
       const userId = req.user?.userId;
+      if (!userId) return void res.status(401).json({ success: false, message: 'User not authenticated' });
 
-      if (!userId) {
-        res.status(401).json({
-          success: false,
-          message: 'User not authenticated',
-        });
-        return;
-      }
-
-      const updateData: any = {};
-
+      const updateData: IUserUpdate = {};
       if (username) {
-        // Check if username is already taken by another user
-        const existingUser = await User.findOne({
-          username: username.toLowerCase(),
-          _id: { $ne: userId },
-        });
-
-        if (existingUser) {
-          res.status(409).json({
-            success: false,
-            message: 'Username already taken',
-          });
-          return;
-        }
-
+        const existingUser = await User.findOne({ username: username.toLowerCase(), _id: { $ne: userId } });
+        if (existingUser) return void res.status(409).json({ success: false, message: 'Username already taken' });
         updateData.username = username.toLowerCase();
       }
 
@@ -44,139 +31,56 @@ export class UserController {
         updateData.preferences = {
           temperatureUnit: preferences.temperatureUnit || 'celsius',
           theme: preferences.theme || 'light',
-          notifications:
-            preferences.notifications !== undefined
-              ? preferences.notifications
-              : true,
+          notifications: preferences.notifications !== undefined ? preferences.notifications : true
         };
       }
 
-      const user = await User.findByIdAndUpdate(userId, updateData, {
-        new: true,
-        select: '-password',
-      });
+      const user = await User.findByIdAndUpdate(userId, updateData, { new: true, select: '-password' });
+      if (!user) return void res.status(404).json({ success: false, message: 'User not found' });
 
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
-        return;
-      }
+      const responseData = {
+        id: user._id, email: user.email, username: user.username,
+        favoriteLocations: user.favoriteLocations, preferences: user.preferences,
+        createdAt: user.createdAt, updatedAt: user.updatedAt
+      };
 
-      res.status(200).json({
-        success: true,
-        message: 'Profile updated successfully',
-        data: {
-          user: {
-            id: user._id,
-            email: user.email,
-            username: user.username,
-            favoriteLocations: user.favoriteLocations,
-            preferences: user.preferences,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-        },
-      });
+      return void res.status(200).json({ success: true, message: 'Profile updated successfully', data: { user: responseData } });
     } catch (error) {
       console.error('Update profile error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to update profile',
-      });
+      return void res.status(500).json({ success: false, message: 'Failed to update profile' });
     }
   };
 
-  updateFavoriteLocations = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
+  updateFavoriteLocations = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { locations } = req.body;
       const userId = req.user?.userId;
 
-      if (!userId) {
-        res.status(401).json({
-          success: false,
-          message: 'User not authenticated',
-        });
-        return;
-      }
+      if (!userId) return void res.status(401).json({ success: false, message: 'User not authenticated' });
+      if (locations.length > 10) return void res.status(400).json({ success: false, message: 'Maximum 10 favorite locations allowed' });
 
-      if (locations.length > 10) {
-        res.status(400).json({
-          success: false,
-          message: 'Maximum 10 favorite locations allowed',
-        });
-        return;
-      }
+      const user = await User.findByIdAndUpdate(userId, { favoriteLocations: locations }, { new: true, select: '-password' });
+      if (!user) return void res.status(404).json({ success: false, message: 'User not found' });
 
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { favoriteLocations: locations },
-        { new: true, select: '-password' },
-      );
-
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
-        return;
-      }
-
-      res.status(200).json({
-        success: true,
-        message: 'Favorite locations updated successfully',
-        data: {
-          favoriteLocations: user.favoriteLocations,
-        },
-      });
+      return void res.status(200).json({ success: true, message: 'Favorite locations updated successfully', data: { favoriteLocations: user.favoriteLocations } });
     } catch (error) {
       console.error('Update favorite locations error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to update favorite locations',
-      });
+      return void res.status(500).json({ success: false, message: 'Failed to update favorite locations' });
     }
   };
 
-  deleteAccount = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
+  deleteAccount = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.userId;
-
-      if (!userId) {
-        res.status(401).json({
-          success: false,
-          message: 'User not authenticated',
-        });
-        return;
-      }
+      if (!userId) return void res.status(401).json({ success: false, message: 'User not authenticated' });
 
       const user = await User.findByIdAndDelete(userId);
+      if (!user) return void res.status(404).json({ success: false, message: 'User not found' });
 
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
-        return;
-      }
-
-      res.status(200).json({
-        success: true,
-        message: 'Account deleted successfully',
-      });
+      return void res.status(200).json({ success: true, message: 'Account deleted successfully' });
     } catch (error) {
       console.error('Delete account error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to delete account',
-      });
+      return void res.status(500).json({ success: false, message: 'Failed to delete account' });
     }
   };
 }

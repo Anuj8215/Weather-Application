@@ -1,4 +1,4 @@
-//SECTION - THIS CODE IS WRITTEN FOR SERVER ENTRY POINT
+// SECTION - THIS CODE IS WRITTEN FOR SERVER ENTRY POINT
 
 import app from './app.js';
 import { connectDB } from './config/database.js';

@@ -7,7 +7,7 @@ import {
   Minutely15WeatherData,
   WeatherData,
   WeatherResponse,
-} from '../../types/index.js';
+} from '../../types/types.js';
 export class WeatherService {
   private readonly baseUrl: string;
 
@@ -268,25 +268,25 @@ export class WeatherService {
         time: dailyTimeRange,
         sunrise: sunriseVar
           ? Array.from(
-              { length: sunriseVar.valuesInt64Length() },
-              (_, i) =>
-                new Date(
-                  (Number(sunriseVar.valuesInt64(i)) +
-                    location.utcOffsetSeconds) *
-                    1000,
-                ),
-            )
+            { length: sunriseVar.valuesInt64Length() },
+            (_, i) =>
+              new Date(
+                (Number(sunriseVar.valuesInt64(i)) +
+                  location.utcOffsetSeconds) *
+                1000,
+              ),
+          )
           : [],
         sunset: sunsetVar
           ? Array.from(
-              { length: sunsetVar.valuesInt64Length() },
-              (_, i) =>
-                new Date(
-                  (Number(sunsetVar.valuesInt64(i)) +
-                    location.utcOffsetSeconds) *
-                    1000,
-                ),
-            )
+            { length: sunsetVar.valuesInt64Length() },
+            (_, i) =>
+              new Date(
+                (Number(sunsetVar.valuesInt64(i)) +
+                  location.utcOffsetSeconds) *
+                1000,
+              ),
+          )
           : [],
         uvIndexMax: Array.from(daily.variables(2)?.valuesArray() ?? []),
         daylightDuration: Array.from(daily.variables(3)?.valuesArray() ?? []),
