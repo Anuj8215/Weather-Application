@@ -17,22 +17,22 @@ interface UpdateLocationsData {
 
 class UserService {
   login(credentials: LoginCredentials) {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   register(credentials: RegisterCredentials) {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   getProfile() {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   validateToken() {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   getCurrentToken(): any {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   logout() {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   // Update user profile
   async updateProfile(data: UpdateProfileData): Promise<User> {
