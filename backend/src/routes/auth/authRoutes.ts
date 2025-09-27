@@ -1,9 +1,9 @@
-//SECTION - This code is written to create authentication routes for an Express application, including user registration, login, profile retrieval, and token refresh functionalities.
+// SECTION - This code is written to create authentication routes for an Express application, including user registration, login, profile retrieval, and token refresh functionalities.
 import { Router } from 'express';
 import { AuthController } from '../../controllers/auth/AuthController.js';
 import {
   validateLogin,
-  validateRegistration,
+  validateRegistration
 } from '../../middleware/validation/validationMiddleware.js';
 import { authenticateToken } from '../../middleware/auth/authMiddleware.js';
 

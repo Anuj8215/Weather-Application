@@ -32,8 +32,8 @@ export default [{
     ...pluginJs.configs.recommended.rules,
     ...tseslintPlugin.configs.recommended.rules,
 
-    "no-process-exit": "error",
-    "no-console": ["warn", { allow: ["warn", "error", "info", "dir"] }],
+    "no-process-exit": "off",
+    "no-console": ["warn", { allow: ["warn", "error", "info", "dir", "log"] }],
     "callback-return": ["error", ["callback", "cb", "next"]],
 
     "import/first": "error",

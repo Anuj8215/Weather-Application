@@ -14,6 +14,27 @@ interface IUserUpdate {
 }
 
 export class UserController {
+  getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) return void res.status(401).json({ success: false, message: 'User not authenticated' });
+
+      const user = await User.findById(userId, '-password');
+      if (!user) return void res.status(404).json({ success: false, message: 'User not found' });
+
+      const responseData = {
+        id: user._id, email: user.email, username: user.username,
+        favoriteLocations: user.favoriteLocations, preferences: user.preferences,
+        createdAt: user.createdAt, updatedAt: user.updatedAt
+      };
+
+      return void res.status(200).json({ success: true, message: 'Profile retrieved successfully', data: { user: responseData } });
+    } catch (error) {
+      console.error('Get profile error:', error);
+      return void res.status(500).json({ success: false, message: 'Failed to get profile' });
+    }
+  };
+
   updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { username, preferences } = req.body;

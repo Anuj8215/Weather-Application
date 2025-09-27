@@ -21,7 +21,7 @@ export class WeatherController {
       if (isNaN(lat) || isNaN(lon)) {
         res.status(400).json({
           success: false,
-          message: 'Valid latitude and longitude parameters are required',
+          message: 'Valid latitude and longitude parameters are required'
         });
         return;
       }
@@ -30,7 +30,7 @@ export class WeatherController {
         res.status(400).json({
           success: false,
           message:
-            'Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180',
+            'Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180'
         });
         return;
       }
@@ -39,14 +39,14 @@ export class WeatherController {
 
       // Add weather description
       const weatherDescription = getWeatherDescription(
-        weatherData.current.weatherCode,
+        weatherData.current.weatherCode
       );
 
       // Set cache control headers for live data
       res.set({
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         Pragma: 'no-cache',
-        Expires: '0',
+        Expires: '0'
       });
 
       res.status(200).json({
@@ -56,9 +56,9 @@ export class WeatherController {
           current: {
             ...weatherData.current,
             description: weatherDescription.description,
-            icon: weatherDescription.icon,
-          },
-        },
+            icon: weatherDescription.icon
+          }
+        }
       });
     } catch (error) {
       console.error('getCurrentWeather error:', error);
@@ -67,7 +67,7 @@ export class WeatherController {
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to fetch weather data',
+            : 'Failed to fetch weather data'
       });
     }
   };
@@ -83,7 +83,7 @@ export class WeatherController {
       if (isNaN(lat) || isNaN(lon)) {
         res.status(400).json({
           success: false,
-          message: 'Valid latitude and longitude parameters are required',
+          message: 'Valid latitude and longitude parameters are required'
         });
         return;
       }
@@ -92,7 +92,7 @@ export class WeatherController {
         res.status(400).json({
           success: false,
           message:
-            'Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180',
+            'Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180'
         });
         return;
       }
@@ -102,7 +102,7 @@ export class WeatherController {
       if (forecastDays < 1 || forecastDays > 16) {
         res.status(400).json({
           success: false,
-          message: 'Days parameter must be between 1 and 16',
+          message: 'Days parameter must be between 1 and 16'
         });
         return;
       }
@@ -110,12 +110,12 @@ export class WeatherController {
       const forecastData = await this.weatherService.getWeatherForecast(
         lat,
         lon,
-        forecastDays,
+        forecastDays
       );
 
       // Add weather descriptions to current and daily data
       const currentDescription = getWeatherDescription(
-        forecastData.current.weatherCode,
+        forecastData.current.weatherCode
       );
 
       const enhancedData = {
@@ -123,26 +123,26 @@ export class WeatherController {
         current: {
           ...forecastData.current,
           description: currentDescription.description,
-          icon: currentDescription.icon,
+          icon: currentDescription.icon
         },
         daily: forecastData.daily
           ? {
-              ...forecastData.daily,
-              descriptions: forecastData.daily.weatherCode.map((code) =>
-                getWeatherDescription(code),
-              ),
-            }
-          : undefined,
+            ...forecastData.daily,
+            descriptions: forecastData.daily.weatherCode.map((code) =>
+              getWeatherDescription(code)
+            )
+          }
+          : undefined
       };
 
       // Set cache control headers for forecast data (can be cached longer than current weather)
       res.set({
-        'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+        'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
       });
 
       res.status(200).json({
         success: true,
-        data: enhancedData,
+        data: enhancedData
       });
     } catch (error) {
       console.error('getWeatherForecast error:', error);
@@ -151,7 +151,7 @@ export class WeatherController {
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to fetch forecast data',
+            : 'Failed to fetch forecast data'
       });
     }
   };
@@ -163,7 +163,7 @@ export class WeatherController {
       if (!q || typeof q !== 'string' || q.trim().length === 0) {
         res.status(400).json({
           success: false,
-          message: 'Search query parameter "q" is required',
+          message: 'Search query parameter "q" is required'
         });
         return;
       }
@@ -172,14 +172,14 @@ export class WeatherController {
 
       res.status(200).json({
         success: true,
-        data: locations,
+        data: locations
       });
     } catch (error) {
       console.error('searchLocations error:', error);
       res.status(500).json({
         success: false,
         message:
-          error instanceof Error ? error.message : 'Failed to search locations',
+          error instanceof Error ? error.message : 'Failed to search locations'
       });
     }
   };

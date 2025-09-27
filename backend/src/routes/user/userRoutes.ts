@@ -6,6 +6,9 @@ import { validateLocationUpdate } from '../../middleware/validation/validationMi
 const router = Router();
 const userController = new UserController();
 
+// ********************************** GET **********************************
+router.get('/profile', authenticateToken, userController.getProfile);
+
 // ********************************** PUT **********************************
 router.put('/profile', authenticateToken, userController.updateProfile);
 router.put('/locations', authenticateToken, validateLocationUpdate, userController.updateFavoriteLocations);

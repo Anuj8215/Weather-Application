@@ -30,7 +30,7 @@ export const weatherCodes: Record<number, WeatherCodeDescription> = {
   86: { code: 86, description: 'Heavy snow showers', icon: '❄️' },
   95: { code: 95, description: 'Thunderstorm', icon: '⛈️' },
   96: { code: 96, description: 'Thunderstorm with slight hail', icon: '⛈️' },
-  99: { code: 99, description: 'Thunderstorm with heavy hail', icon: '⛈️' },
+  99: { code: 99, description: 'Thunderstorm with heavy hail', icon: '⛈️' }
 };
 
 export const getWeatherDescription = (code: number): WeatherCodeDescription => {

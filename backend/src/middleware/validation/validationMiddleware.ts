@@ -1,33 +1,27 @@
-//SECTION - This code is written to create authentication validation middleware for an Express application using JWT (JSON Web Tokens).
+// SECTION - This code is written to create authentication validation middleware for an Express application using JWT (JSON Web Tokens).
 
 import { NextFunction, Request, Response } from 'express';
 import validator from 'validator';
 
-export const validateRegistration = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
+export const validateRegistration = (req: Request, res: Response, next: NextFunction): void => {
   const { email, username, password } = req.body;
-  const errors: string[] = [];
+  const errors: Array<string> = [];
 
-  //NOTE - Email validation
-  if (!email || !validator.isEmail(email)) {
+  // NOTE - Email validation
+  if (!email || !validator.isEmail(email))
     errors.push('Valid email is required');
-  }
 
-  //NOTE - Username validation
-  if (!username || !validator.isLength(username, { min: 3, max: 30 })) {
+  // NOTE - Username validation
+  if (!username || !validator.isLength(username, { min: 3, max: 30 }))
     errors.push('Username must be between 3 to 30 characters');
-  }
-  if (username && !validator.isAlphanumeric(username.trim())) {
-    errors.push('Username must be alphanumeric');
-  }
 
-  //NOTE - Password validation
-  if (!password || !validator.isLength(password, { min: 6 })) {
+  if (username && !validator.isAlphanumeric(username.trim()))
+    errors.push('Username must be alphanumeric');
+
+  // NOTE - Password validation
+  if (!password || !validator.isLength(password, { min: 6 }))
     errors.push('Password must be at least 6 characters long');
-  }
+
   if (
     password &&
     !validator.isStrongPassword(password, {
@@ -35,65 +29,55 @@ export const validateRegistration = (
       minLowercase: 1,
       minUppercase: 1,
       minNumbers: 1,
-      minSymbols: 1,
+      minSymbols: 1
     })
   ) {
     errors.push(
-      'Password must include uppercase, lowercase, number and symbol',
+      'Password must include uppercase, lowercase, number and symbol'
     );
   }
-  if (errors.length > 0) {
-    res.status(400).json({ errors });
-    return;
-  } else {
-    next();
-  }
+  if (errors.length > 0) return void res.status(400).json({ errors });
+  return next();
 };
 export const validateLogin = (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): void => {
-  const { email, password } = req.body;
-  const errors: string[] = [];
+  const { username, password } = req.body;
+  const errors: Array<string> = [];
 
-  //NOTE - Email validation
-  if (!email || !validator.isEmail(email)) {
-    errors.push('Valid email is required');
-  }
+  // NOTE - Username validation
+  if (!username || !validator.isLength(username, { min: 3 }))
+    errors.push('Username must be at least 3 characters long');
 
-  //NOTE - Password validation
-  if (!password || !validator.isLength(password, { min: 6 })) {
+  // NOTE - Password validation
+  if (!password || !validator.isLength(password, { min: 6 }))
     errors.push('Password must be at least 6 characters long');
-  }
-  if (errors.length > 0) {
-    res.status(400).json({ errors });
-    return;
-  } else {
-    next();
-  }
+
+  if (errors.length > 0) return void res.status(400).json({ errors });
+  return next();
 };
 export const validateLocationUpdate = (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): void => {
   const { locations } = req.body;
 
   if (!Array.isArray(locations)) {
     res.status(400).json({
       success: false,
-      message: 'Locations must be an array',
+      message: 'Locations must be an array'
     });
     return;
   }
 
-  const errors: string[] = [];
+  const errors: Array<string> = [];
 
   locations.forEach((location, index) => {
-    if (!location.name || validator.isEmpty(location.name.trim())) {
+    if (!location.name || validator.isEmpty(location.name.trim()))
       errors.push(`Location ${index + 1}: Name is required`);
-    }
 
     if (
       typeof location.latitude !== 'number' ||
@@ -101,7 +85,7 @@ export const validateLocationUpdate = (
       location.latitude > 90
     ) {
       errors.push(
-        `Location ${index + 1}: Valid latitude (-90 to 90) is required`,
+        `Location ${index + 1}: Valid latitude (-90 to 90) is required`
       );
     }
 
@@ -111,7 +95,7 @@ export const validateLocationUpdate = (
       location.longitude > 180
     ) {
       errors.push(
-        `Location ${index + 1}: Valid longitude (-180 to 180) is required`,
+        `Location ${index + 1}: Valid longitude (-180 to 180) is required`
       );
     }
   });
@@ -120,7 +104,7 @@ export const validateLocationUpdate = (
     res.status(400).json({
       success: false,
       message: 'Validation failed',
-      errors,
+      errors
     });
     return;
   }

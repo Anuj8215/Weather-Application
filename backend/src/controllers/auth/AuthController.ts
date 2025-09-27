@@ -1,4 +1,4 @@
-//SECTION - This code is written to create an authentication controller for an Express application using JWT (JSON Web Tokens).
+// SECTION - This code is written to create an authentication controller for an Express application using JWT (JSON Web Tokens).
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models/user/User.js';
@@ -7,12 +7,10 @@ import { AuthenticatedRequest } from '../../middleware/auth/authMiddleware.js';
 export class AuthController {
   private generateToken(userId: string, email: string): string {
     const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error('JWT_SECRET is not configured');
-    }
+    if (!secret) throw new Error('JWT_SECRET is not configured');
 
     return jwt.sign({ userId, email }, secret, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
     });
   }
 
@@ -24,8 +22,8 @@ export class AuthController {
       const existingUser = await User.findOne({
         $or: [
           { email: email.toLowerCase() },
-          { username: username.toLowerCase() },
-        ],
+          { username: username.toLowerCase() }
+        ]
       });
 
       if (existingUser) {
@@ -34,7 +32,7 @@ export class AuthController {
           message:
             existingUser.email === email.toLowerCase()
               ? 'Email already registered'
-              : 'Username already taken',
+              : 'Username already taken'
         });
         return;
       }
@@ -48,8 +46,8 @@ export class AuthController {
         preferences: {
           temperatureUnit: 'celsius',
           theme: 'light',
-          notifications: true,
-        },
+          notifications: true
+        }
       });
 
       await user.save();
@@ -67,31 +65,31 @@ export class AuthController {
             username: user.username,
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
-            createdAt: user.createdAt,
+            createdAt: user.createdAt
           },
-          token,
-        },
+          token
+        }
       });
     } catch (error) {
       console.error('Registration error:', error);
       res.status(500).json({
         success: false,
-        message: 'Registration failed',
+        message: 'Registration failed'
       });
     }
   };
 
   login = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email, password } = req.body;
+      const { username, password } = req.body;
 
-      // Find user by email
-      const user = await User.findOne({ email: email.toLowerCase() });
+      // Find user by username
+      const user = await User.findOne({ username: username.toLowerCase() });
 
       if (!user) {
         res.status(401).json({
           success: false,
-          message: 'Invalid email or password',
+          message: 'Invalid username or password'
         });
         return;
       }
@@ -102,7 +100,7 @@ export class AuthController {
       if (!isPasswordValid) {
         res.status(401).json({
           success: false,
-          message: 'Invalid email or password',
+          message: 'Invalid username or password'
         });
         return;
       }
@@ -120,23 +118,23 @@ export class AuthController {
             username: user.username,
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
-            createdAt: user.createdAt,
+            createdAt: user.createdAt
           },
-          token,
-        },
+          token
+        }
       });
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({
         success: false,
-        message: 'Login failed',
+        message: 'Login failed'
       });
     }
   };
 
   getProfile = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const user = await User.findById(req.user?.userId).select('-password');
@@ -144,7 +142,7 @@ export class AuthController {
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'User not found',
+          message: 'User not found'
         });
         return;
       }
@@ -159,28 +157,28 @@ export class AuthController {
             favoriteLocations: user.favoriteLocations,
             preferences: user.preferences,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-        },
+            updatedAt: user.updatedAt
+          }
+        }
       });
     } catch (error) {
       console.error('Get profile error:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to fetch profile',
+        message: 'Failed to fetch profile'
       });
     }
   };
 
   refreshToken = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated',
+          message: 'User not authenticated'
         });
         return;
       }
@@ -191,14 +189,14 @@ export class AuthController {
         success: true,
         message: 'Token refreshed successfully',
         data: {
-          token: newToken,
-        },
+          token: newToken
+        }
       });
     } catch (error) {
       console.error('Token refresh error:', error);
       res.status(500).json({
         success: false,
-        message: 'Token refresh failed',
+        message: 'Token refresh failed'
       });
     }
   };

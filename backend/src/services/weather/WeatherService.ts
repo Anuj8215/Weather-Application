@@ -6,8 +6,9 @@ import {
   LocationSearchResult,
   Minutely15WeatherData,
   WeatherData,
-  WeatherResponse,
+  WeatherResponse
 } from '../../types/types.js';
+
 export class WeatherService {
   private readonly baseUrl: string;
 
@@ -15,17 +16,17 @@ export class WeatherService {
     this.baseUrl = 'https://api.open-meteo.com/v1/forecast';
   }
 
-  private range(start: number, stop: number, step: number): number[] {
+  private range(start: number, stop: number, step: number): Array<number> {
     return Array.from(
       { length: (stop - start) / step },
-      (_, i) => start + i * step,
+      (_, i) => start + i * step
     );
   }
 
   private calculateFeelsLike(
     temperature: number,
     humidity: number,
-    windSpeed: number,
+    windSpeed: number
   ): number {
     const windChill =
       temperature <= 10 ? temperature - windSpeed * 0.7 : temperature;
@@ -36,7 +37,7 @@ export class WeatherService {
 
   async getCurrentWeather(
     latitude: number,
-    longitude: number,
+    longitude: number
   ): Promise<WeatherResponse> {
     try {
       const params = {
@@ -52,24 +53,24 @@ export class WeatherService {
           'relative_humidity_2m',
           'surface_pressure',
           'visibility',
-          'dew_point_2m',
+          'dew_point_2m'
         ],
         minutely_15: [
           'rain',
           'sunshine_duration',
           'visibility',
           'dew_point_2m',
-          'temperature_2m',
+          'temperature_2m'
         ],
-        timezone: 'auto',
+        timezone: 'auto'
       };
 
       const responses = await fetchWeatherApi(this.baseUrl, params);
       const response = responses[0];
 
-      if (!response) {
+      if (!response)
         throw new Error('No response from weather API');
-      }
+
 
       // Location data
       const location: LocationData = {
@@ -77,14 +78,14 @@ export class WeatherService {
         longitude: response.longitude(),
         elevation: response.elevation(),
         timezone: response.timezone() || 'UTC',
-        utcOffsetSeconds: response.utcOffsetSeconds(),
+        utcOffsetSeconds: response.utcOffsetSeconds()
       };
 
       // Current weather data
       const current = response.current();
-      if (!current) {
+      if (!current)
         throw new Error('No current weather data');
-      }
+
       const currentWeather: WeatherData = {
         temperature: Math.round(current.variables(0)?.value() ?? 0),
         isDay: current.variables(1)?.value() === 1,
@@ -100,8 +101,8 @@ export class WeatherService {
         feelsLike: this.calculateFeelsLike(
           Math.round(current.variables(0)?.value() ?? 0),
           current.variables(6)?.value() ?? 0,
-          current.variables(4)?.value() ?? 0,
-        ),
+          current.variables(4)?.value() ?? 0
+        )
       };
 
       // Minutely 15 data
@@ -111,7 +112,7 @@ export class WeatherService {
         const timeRange = this.range(
           Number(minutely15.time()),
           Number(minutely15.timeEnd()),
-          minutely15.interval(),
+          minutely15.interval()
         ).map((t) => new Date((t + location.utcOffsetSeconds) * 1000));
 
         const rainValues = minutely15.variables(0)?.valuesArray();
@@ -126,7 +127,7 @@ export class WeatherService {
           sunshineDuration: sunshineValues ? Array.from(sunshineValues) : [],
           visibility: visibilityValues ? Array.from(visibilityValues) : [],
           dewPoint: dewPointValues ? Array.from(dewPointValues) : [],
-          temperature: temperatureValues ? Array.from(temperatureValues) : [],
+          temperature: temperatureValues ? Array.from(temperatureValues) : []
         };
       }
 
@@ -134,12 +135,12 @@ export class WeatherService {
         location,
         current: currentWeather,
         minutely15: minutely15Data,
-        lastUpdated: new Date(),
+        lastUpdated: new Date()
       };
     } catch (error) {
       console.error('Open-Meteo API Error:', error);
       throw new Error(
-        `Failed to fetch weather data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to fetch weather data: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -147,7 +148,7 @@ export class WeatherService {
   async getWeatherForecast(
     latitude: number,
     longitude: number,
-    days: number = 10,
+    days = 10
   ): Promise<WeatherResponse> {
     try {
       const params = {
@@ -161,7 +162,7 @@ export class WeatherService {
           'wind_speed_10m',
           'wind_direction_10m',
           'relative_humidity_2m',
-          'surface_pressure',
+          'surface_pressure'
         ],
         hourly: [
           'temperature_2m',
@@ -170,7 +171,7 @@ export class WeatherService {
           'surface_pressure',
           'wind_speed_10m',
           'wind_direction_10m',
-          'weather_code',
+          'weather_code'
         ],
         daily: [
           'sunrise',
@@ -181,18 +182,18 @@ export class WeatherService {
           'temperature_2m_max',
           'temperature_2m_min',
           'weather_code',
-          'precipitation_sum',
+          'precipitation_sum'
         ],
         forecast_days: days,
-        timezone: 'auto',
+        timezone: 'auto'
       };
 
       const responses = await fetchWeatherApi(this.baseUrl, params);
       const response = responses[0];
 
-      if (!response) {
+      if (!response)
         throw new Error('No response from weather API');
-      }
+
 
       // Location data
       const location: LocationData = {
@@ -200,14 +201,14 @@ export class WeatherService {
         longitude: response.longitude(),
         elevation: response.elevation(),
         timezone: response.timezone() || 'UTC',
-        utcOffsetSeconds: response.utcOffsetSeconds(),
+        utcOffsetSeconds: response.utcOffsetSeconds()
       };
 
       // Current weather
       const current = response.current();
-      if (!current) {
+      if (!current)
         throw new Error('No current weather data');
-      }
+
       const currentWeather: WeatherData = {
         temperature: Math.round(current.variables(0)?.value() ?? 0),
         isDay: current.variables(1)?.value() === 1,
@@ -223,19 +224,19 @@ export class WeatherService {
         feelsLike: this.calculateFeelsLike(
           Math.round(current.variables(0)?.value() ?? 0),
           current.variables(6)?.value() ?? 0,
-          current.variables(4)?.value() ?? 0,
-        ),
+          current.variables(4)?.value() ?? 0
+        )
       };
 
       // Hourly data
       const hourly = response.hourly();
-      if (!hourly) {
+      if (!hourly)
         throw new Error('No hourly weather data');
-      }
+
       const hourlyTimeRange = this.range(
         Number(hourly.time()),
         Number(hourly.timeEnd()),
-        hourly.interval(),
+        hourly.interval()
       ).map((t) => new Date((t + location.utcOffsetSeconds) * 1000));
 
       const hourlyData: HourlyWeatherData = {
@@ -246,18 +247,18 @@ export class WeatherService {
         pressure: Array.from(hourly.variables(3)?.valuesArray() ?? []),
         windSpeed: Array.from(hourly.variables(4)?.valuesArray() ?? []),
         windDirection: Array.from(hourly.variables(5)?.valuesArray() ?? []),
-        weatherCode: Array.from(hourly.variables(6)?.valuesArray() ?? []),
+        weatherCode: Array.from(hourly.variables(6)?.valuesArray() ?? [])
       };
 
       // Daily data
       const daily = response.daily();
-      if (!daily) {
+      if (!daily)
         throw new Error('No daily weather data');
-      }
+
       const dailyTimeRange = this.range(
         Number(daily.time()),
         Number(daily.timeEnd()),
-        daily.interval(),
+        daily.interval()
       ).map((t) => new Date((t + location.utcOffsetSeconds) * 1000));
 
       // Handle Int64 values for sunrise/sunset
@@ -273,8 +274,8 @@ export class WeatherService {
               new Date(
                 (Number(sunriseVar.valuesInt64(i)) +
                   location.utcOffsetSeconds) *
-                1000,
-              ),
+                1000
+              )
           )
           : [],
         sunset: sunsetVar
@@ -284,8 +285,8 @@ export class WeatherService {
               new Date(
                 (Number(sunsetVar.valuesInt64(i)) +
                   location.utcOffsetSeconds) *
-                1000,
-              ),
+                1000
+              )
           )
           : [],
         uvIndexMax: Array.from(daily.variables(2)?.valuesArray() ?? []),
@@ -294,7 +295,7 @@ export class WeatherService {
         temperatureMax: Array.from(daily.variables(5)?.valuesArray() ?? []),
         temperatureMin: Array.from(daily.variables(6)?.valuesArray() ?? []),
         weatherCode: Array.from(daily.variables(7)?.valuesArray() ?? []),
-        precipitationSum: Array.from(daily.variables(8)?.valuesArray() ?? []),
+        precipitationSum: Array.from(daily.variables(8)?.valuesArray() ?? [])
       };
 
       return {
@@ -302,12 +303,12 @@ export class WeatherService {
         current: currentWeather,
         hourly: hourlyData,
         daily: dailyData,
-        lastUpdated: new Date(),
+        lastUpdated: new Date()
       };
     } catch (error) {
       console.error('Open-Meteo Forecast API Error:', error);
       throw new Error(
-        `Failed to fetch forecast data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to fetch forecast data: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -323,18 +324,18 @@ export class WeatherService {
     try {
       const geocodingUrl = 'https://geocoding-api.open-meteo.com/v1/search';
       const response = await fetch(
-        `${geocodingUrl}?name=${encodeURIComponent(query)}&count=10&language=en&format=json`,
+        `${geocodingUrl}?name=${encodeURIComponent(query)}&count=10&language=en&format=json`
       );
 
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`Geocoding API error: ${response.statusText}`);
-      }
+
 
       const data = await response.json();
 
-      if (!data.results) {
+      if (!data.results)
         return [];
-      }
+
 
       return data.results.map((result: LocationSearchResult) => ({
         name: result.name,
@@ -342,12 +343,12 @@ export class WeatherService {
         longitude: result.longitude,
         country: result.country || '',
         admin1: result.admin1 || '',
-        admin2: result.admin2 || '',
+        admin2: result.admin2 || ''
       }));
     } catch (error) {
       console.error('Location search error:', error);
       throw new Error(
-        `Failed to search locations: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to search locations: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
